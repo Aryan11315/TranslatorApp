@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Translator</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+        }
+        .box {
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            color: white;
+            animation: fadeIn 0.6s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .box h1 {
+            font-size: 28px;
+            text-align: center;
+            margin-bottom: 25px;
+            font-weight: 700;
+            color: #fff;
+        }
+        label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+        input, select {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 15px;
+            outline: none;
+        }
+        input {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        select {
+            background: rgba(255, 255, 255, 0.9);
+        }
+        button {
+            background: #00c6ff;
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.5);
+        }
+        #resultText {
+            margin-top: 15px;
+            padding: 12px;
+            background: rgba(255, 255, 255, 0.15);
+            border-radius: 10px;
+            min-height: 50px;
+            font-size: 15px;
+            line-height: 1.5;
+        }
+        @media (max-width: 500px) {
+            .box {
+                padding: 20px;
+            }
+            .box h1 {
+                font-size: 22px;
+            }
+            input, select, button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🌐 Translator</h1>
+        <label for="inputText">Input:</label>
+        <input type="text" id="inputText" placeholder="Type text to translate...">
+
+        <label for="lang">Select Language:</label>
+        <select id="lang">
+            <option value="Spanish">Spanish</option>
+            <option value="French">French</option>
+            <option value="Hindi">Hindi</option>
+            <option value="English">English</option>
+        </select>
+
+        <button id="translate">Translate</button>
+        <div id="resultText">Output will appear here...</div>
+    </div>
+
+    <script type="module">
+        import { GoogleGenerativeAI } from "https://esm.run/@google/generative-ai";
+        const API_KEY = "AIzaSyAa4Gw5CzAu7whpIrRcpHUWLPBR6VeMkyE";
+        const genAI = new GoogleGenerativeAI(API_KEY);
+
+        document.getElementById("translate").onclick = async function () {
+            const inputText = document.getElementById("inputText").value.trim();
+            const language = document.getElementById("lang").value;
+            const outputDiv = document.getElementById("resultText");
+
+            if (!inputText) {
+                outputDiv.innerText = "⚠️ Please enter some text.";
+                return;
+            }
+
+            const prompt = `Translate this to ${language}: ${inputText}`;
+            try {
+                outputDiv.innerText = "⏳ Translating...";
+                const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+                const result = await model.generateContent(prompt);
+                const output = await result.response.text();
+                outputDiv.innerText = output;
+            } catch (error) {
+                outputDiv.innerText = "❌ Translation Failed";
+            }
+        };
+    </script>
+</body>
+</html>

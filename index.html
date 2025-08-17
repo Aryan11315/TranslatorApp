@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OTP Login</title>
+    <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #1e3c72, #2a5298);
+            padding: 20px;
+        }
+        .box {
+            width: 100%;
+            max-width: 450px;
+            padding: 25px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 20px;
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            color: white;
+            animation: fadeIn 0.6s ease-in-out;
+            text-align: center;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .box h1 {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 25px;
+            color: #fff;
+        }
+        label {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            display: block;
+            text-align: left;
+        }
+        input {
+            padding: 12px;
+            border-radius: 10px;
+            border: none;
+            width: 100%;
+            margin-bottom: 15px;
+            font-size: 15px;
+            outline: none;
+            background: rgba(255, 255, 255, 0.9);
+            color: #333;
+        }
+        button {
+            background: linear-gradient(45deg, #00c6ff, #0072ff);
+            border: none;
+            color: white;
+            padding: 12px;
+            width: 100%;
+            font-size: 16px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 114, 255, 0.5);
+        }
+        #otp-section {
+            display: none;
+        }
+        @media (max-width: 500px) {
+            .box {
+                padding: 20px;
+            }
+            .box h1 {
+                font-size: 22px;
+            }
+            input, button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="box">
+        <h1>🔐 OTP Login</h1>
+
+        <div id="email-section">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="Enter your email">
+            <button onclick="sendOTP()">Send OTP</button>
+        </div>
+
+        <div id="otp-section">
+            <label for="otp">Enter OTP</label>
+            <input type="text" id="otp" placeholder="Enter OTP">
+            <button onclick="verifyOTP()">Verify</button>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            emailjs.init("iu_OSHgTkpiCF8ExO");
+        });
+
+        let generatedOtp = null;
+
+        function sendOTP() {
+            const email = document.getElementById('email').value.trim();
+            if (!email) {
+                alert("Enter a valid email");
+                return;
+            }
+
+            generatedOtp = Math.floor(1000 + Math.random() * 9000);
+
+            emailjs.send("service_1w8zmql", "template_6y24pdk", {
+                to_email: email,
+                otp: generatedOtp
+            })
+            .then(response => {
+                console.log("OTP sent successfully:", response);
+                alert(`OTP sent to ${email}`);
+                // Switch sections
+                document.getElementById('email-section').style.display = 'none';
+                document.getElementById('otp-section').style.display = 'block';
+            })
+            .catch(error => {
+                console.error("Error sending OTP:", error);
+                alert("Failed to send OTP. Please try again.");
+            });
+        }
+
+        function verifyOTP() {
+            const otp = document.getElementById('otp').value.trim();
+            if (parseInt(otp, 10) === generatedOtp) {
+                alert("✅ Email verified");
+                window.location.href = "Translator.html";
+            } else {
+                alert("❌ Invalid OTP, please try again");
+            }
+        }
+    </script>
+</body>
+</html>
